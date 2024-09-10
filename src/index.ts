@@ -3,10 +3,10 @@ import { mainnet } from "viem/chains";
 import { PrismaClient } from '@prisma/client';
 import { getAllDepositEvents } from './fetchData';
 
-// Initialize Prisma Client
+// Prisma Client
 const prisma = new PrismaClient();
 
-// Define the DepositEventData interface
+// DepositEventData interface
 interface DepositEventData {
   pubkey?: string;
   withdrawal_credentials?: string;
@@ -17,7 +17,6 @@ interface DepositEventData {
 
 // Function to save deposit event data
 async function saveDepositEvent(eventData: DepositEventData) {
-  // Ensure all required fields are defined
   if (!eventData.pubkey || !eventData.withdrawal_credentials || !eventData.amount || !eventData.signature || !eventData.index) {
     console.error('Invalid deposit event data:', eventData);
     return;
@@ -39,7 +38,7 @@ async function saveDepositEvent(eventData: DepositEventData) {
   }
 }
 
-// Constants for beacon deposit contract - OG
+// Constants for beacon deposit contract
 const beaconDeposit_Address = "0x00000000219ab540356cBB839Cbe05303d7705Fa";
 const beaconDeposit_Abi_Event = [
   parseAbiItem(
@@ -47,7 +46,7 @@ const beaconDeposit_Abi_Event = [
   ),
 ];
 
-// Creating a public client, connecting to the mainnet via Alchemy RPC - OG
+// Creating a public client, connecting to the mainnet via Alchemy RPC
 const publicClient = createPublicClient({
   chain: mainnet,
   transport: http(
@@ -55,10 +54,10 @@ const publicClient = createPublicClient({
   ), // private RPC endpoint -> Alchemy  
 });
 
-// Constants for tx - OG
+// Constants for tx
 const deposit_tx = "0x1391be19259f10e01336a383217cf35344dd7aa157e95030f46235448ef5e5d6";
 
-// 1. Function to get the deposit transaction data - OG
+// 1. Function to get the deposit transaction data 
 const getDepositTransactionData = async (txHash: `0x${string}`) => {
   try {
     const txReceipt = await publicClient.getTransactionReceipt({
@@ -72,7 +71,7 @@ const getDepositTransactionData = async (txHash: `0x${string}`) => {
   }
 };
 
-// 2. Function to track ETH deposit - OG
+// 2. Function to track ETH deposit
 const trackDeposit = async () => {
   try {
     console.log("Listening for Deposit events...");
@@ -93,7 +92,7 @@ const trackDeposit = async () => {
             index,
           });
 
-          // Save the deposit event data to the database
+          // Saving the deposit event data to the database
           saveDepositEvent({
             pubkey,
             withdrawal_credentials,
@@ -102,7 +101,7 @@ const trackDeposit = async () => {
             index
           });
 
-          // NOTE: Add the logic to send deposit event notification via Telegram
+          // NOTE: Will be adding logic to send deposit event notification via Telegram
         });
       },
       onError: (error) => {
@@ -135,5 +134,4 @@ async function main() {
   }
 }
 
-// Run the main function
 main();
